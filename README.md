@@ -113,7 +113,7 @@ Anda dapat menjalankan seluruh aplikasi beserta instalasi dependensinya hanya de
 ### 🔹 Opsi B: Melalui Terminal (Command Prompt / PowerShell)
 1. Buka terminal dan arahkan ke direktori proyek:
    ```cmd
-   cd C:\Users\Yohanes Joni\.gemini\antigravity\scratch\flash-sale-poc
+   cd C:\Users\...\....\...\...\flash-sale-poc
    ```
 2. Jalankan berkas batch:
    ```cmd
