@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flash Sale Simulator — PoC APL UNY 2025</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js via CDN for beautiful realtime hit-rate graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Frontend Javascript logic -->
+  <script src="client.js" defer></script>
+</head>
+<body>
+
+  <!-- HEADER BAR -->
+  <header class="app-header">
+    <div class="header-logo">
+      <span class="flash-icon">🔴</span>
+      <div class="logo-text">
+        <h1>HARBOLNAS FLASH SALE</h1>
+        <p>Studi Kasus 7 | Arsitektur Perangkat Lunak UNY 2025</p>
+      </div>
+    </div>
+    
+    <!-- DUAL MODE SWITCH -->
+    <div class="mode-control">
+      <span class="mode-label">Mode:</span>
+      <div class="toggle-container">
+        <button id="btn-user-mode" class="mode-toggle-btn active">🛒 Pengguna</button>
+        <button id="btn-dev-mode" class="mode-toggle-btn">💻 Developer</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main id="app-container" class="layout-user">
+    
+    <!-- LEFT PANEL: SHOPPING UI (Always visible, changes styles in dev mode) -->
+    <section id="shopping-deck" class="panel glass-card">
+      <div class="panel-header text-center">
+        <h2>⚡ FLASH SALE HARBOLNAS ⚡</h2>
+        <p class="subtitle text-red">IPhone 15 Pro Max seharga Rp10.000 saja!</p>
+      </div>
+
+      <!-- PRODUCT SHOWCASE CARD -->
+      <div class="product-card">
+        <div class="product-badge">99% OFF</div>
+        <div class="product-image-container">
+          <div class="iphone-mockup">
+            <span class="camera-lens"></span>
+            <div class="screen-glow"></div>
+            <div class="promo-price">Rp10k</div>
+          </div>
+        </div>
+        
+        <div class="product-info">
+          <h3>iPhone 15 Pro Max 256GB</h3>
+          <div class="price-tier">
+            <span class="original-price">Rp 20.000.000</span>
+            <span class="discount-price">Rp 10.000</span>
+          </div>
+          
+          <!-- LIVE STOCK COUNTDOWN -->
+          <div class="stock-display">
+            <div class="stock-label">
+              <span>Stok Terbatas:</span>
+              <strong id="live-stock" class="text-red">3</strong> unit tersisa
+            </div>
+            <div class="stock-bar-container">
+              <div id="live-stock-bar" class="stock-bar" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMULATION CONTROLS & CHECKOUT FORM -->
+      <form id="checkout-form" class="checkout-form" onsubmit="return false;">
+        <div class="form-title">Pesan Sekarang Sebelum Kehabisan!</div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="buyer-name">Nama Pembeli:</label>
+            <input type="text" id="buyer-name" value="User-A" placeholder="Masukkan nama pembeli" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="buyer-ip">Alamat IP Simulasi:</label>
+            <input type="text" id="buyer-ip" value="192.168.1.100" placeholder="e.g. 192.168.1.100" required>
+            <small class="help-text">Simulasi IP untuk menguji Rate Limiting</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Metode Pembayaran:</label>
+          <div class="payment-selector">
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="gopay" checked>
+              <div class="payment-card">
+                <span class="wallet-icon">📱</span>
+                <strong>GoPay</strong>
+                <small>Verifikasi Cepat (~60ms)</small>
+              </div>
+            </label>
+            
+            <label class="payment-option">
+              <input type="radio" name="payment-method" value="bank_transfer">
+              <div class="payment-card">
+                <span class="wallet-icon">🏦</span>
+                <strong>Virtual Account</strong>
+                <small>Core Banking (~120ms)</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button id="btn-checkout" type="button" class="btn btn-primary btn-block animate-pulse">
+          ⚡ BELI SEKARANG (CHECKOUT)
+        </button>
+
+        <div class="user-actions-row">
+          <button id="btn-view-product" type="button" class="btn btn-secondary">
+            👁️ Refresh Halaman Produk (Simulasi Read)
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- RIGHT PANEL: DEVELOPER ZONE (Hidden in User Mode, reveals on toggle) -->
+    <section id="developer-deck" class="developer-deck hidden">
+      
+      <!-- GRID 1: TOPOLOGY & ACTIVE PATH GRAPH -->
+      <div class="panel glass-card topo-card">
+        <h3>🔗 Topologi Arsitektur Microservice</h3>
+        <p class="card-desc">Sinyal berkedip hijau/merah real-time saat request masuk</p>
+        
+        <div class="topology-container">
+          <!-- CLIENT -->
+          <div id="node-client" class="topo-node active">
+            <div class="node-icon">👤</div>
+            <div class="node-name">Client IP</div>
+            <small id="topo-client-ip">192.168.1.100</small>
+          </div>
+          
+          <div class="topo-arrow arrow-1">➡️</div>
+
+          <!-- API GATEWAY -->
+          <div id="node-gateway" class="topo-node">
+            <div class="node-icon">🛡️</div>
+            <div class="node-name">API Gateway</div>
+            <small id="topo-circuit-badge" class="badge badge-success">Circuit CLOSED</small>
+          </div>
+
+          <!-- ROUTES SPLIT CONTAINER -->
+          <div class="topology-split">
+            <!-- READ PATH -->
+            <div class="topo-path path-read">
+              <div class="path-label">GET (99% Traffic)</div>
+              <div class="path-row">
+                <div class="topo-arrow">➡️</div>
+                <div id="node-catalog" class="topo-node">
+                  <div class="node-icon">📋</div>
+                  <div class="node-name">Catalog Svc</div>
+                </div>
+                <div class="topo-arrow">➡️</div>
+                <div id="node-redis" class="topo-node">
+                  <div class="node-icon">⚡</div>
+                  <div class="node-name">Redis Cache</div>
+                  <small id="topo-redis-status" class="text-gray">Idle</small>
+                </div>
+                <div class="topo-arrow text-gray">➡️</div>
+                <div id="node-replica" class="topo-node node-secondary">
+                  <div class="node-icon">📊</div>
+                  <div class="node-name">DB Read Replica</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WRITE PATH -->
+            <div class="topo-path path-write">
+              <div class="path-label">POST Checkout (1% Traffic)</div>
+              <div class="path-row">
+                <div class="topo-arrow">➡️</div>
+                <div id="node-transaction" class="topo-node">
+                  <div class="node-icon">💳</div>
+                  <div class="node-name">Transaction Svc</div>
+                </div>
+                <div class="topo-arrow">➡️</div>
+                <div id="node-lock" class="topo-node">
+                  <div class="node-icon">🔒</div>
+                  <div class="node-name">Redlock</div>
+                  <small id="topo-lock-status" class="text-green">UNLOCKED</small>
+                </div>
+                <div class="topo-arrow">➡️</div>
+                <div id="node-primary" class="topo-node">
+                  <div class="node-icon">🗄️</div>
+                  <div class="node-name">DB Primary SQL</div>
+                </div>
+                <div class="topo-arrow">➡️</div>
+                <div id="node-kafka" class="topo-node">
+                  <div class="node-icon">📨</div>
+                  <div class="node-name">Kafka Broker</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRID 2: REAL-TIME METRICS & METERS -->
+      <div class="metrics-grid">
+        
+        <!-- REDIS TTL COUNTDOWNS -->
+        <div class="panel glass-card">
+          <div class="panel-header-mini">
+            <h4>⚡ Redis Cache Monitor</h4>
+            <button id="btn-invalidate-cache" class="btn btn-xs btn-outline-danger">🗑️ Invalidate</button>
+          </div>
+          <div id="redis-keys-list" class="monitor-container">
+            <div class="empty-state text-gray">Cache kosong. Lakukan simulasi read!</div>
+          </div>
+        </div>
+
+        <!-- DISTRIBUTED LOCKS STATUS -->
+        <div class="panel glass-card">
+          <h4>🔒 Distributed Lock (Redlock) State</h4>
+          <div id="lock-state-box" class="lock-monitor-box">
+            <div class="lock-indicator">
+              <div id="lock-led" class="led led-green"></div>
+              <div>
+                <strong id="lock-text">UNLOCKED</strong>
+                <p id="lock-subtext" class="text-gray text-xs">Produk bebas bertransaksi</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GATEWAY RATE LIMITERS & CIRCUIT BREAKER CONTROL -->
+        <div class="panel glass-card">
+          <h4>🛡️ API Gateway Controller</h4>
+          <div class="gateway-stats flex-col">
+            <div class="stat-row">
+              <span>Status Circuit Breaker:</span>
+              <span id="gateway-circuit-state" class="badge badge-success">CLOSED (Normal)</span>
+            </div>
+            <div class="stat-row">
+              <span>Keadaan Downstream:</span>
+              <span id="gateway-failures-count" class="text-green">0 / 3 Kesalahan</span>
+            </div>
+            <div class="gateway-actions-row">
+              <button id="btn-manual-circuit" class="btn btn-xs btn-outline-warning">⚡ Paksa Buka Circuit (Simulasi Mati)</button>
+              <button id="btn-reset-circuit" class="btn btn-xs btn-outline-success hidden">✓ Stabilkan Sistem (Tutup Circuit)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRAPH: CACHE HIT RATE -->
+        <div class="panel glass-card chart-card">
+          <h4>📊 Cache Hit Rate (%)</h4>
+          <div class="chart-container">
+            <canvas id="hitRateChart" height="130"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <!-- STRESS TEST SIMULATOR (NEW FEATURE) -->
+      <div class="panel glass-card stress-card">
+        <div class="panel-header-mini">
+          <h3>💥 High Concurrency Stress Test Simulator</h3>
+          <span class="badge badge-success">Developer Exclusive</span>
+        </div>
+        <p class="card-desc">Simulasikan lonjakan trafik jutaan pembeli secara serentak tepat pukul 00:00 WIB untuk menguji ketahanan Caching, Redlock, dan Gateway.</p>
+        
+        <div class="stress-form">
+          <div class="stress-row">
+            <!-- User Range Slider & Input -->
+            <div class="form-group flex-grow">
+              <label for="stress-users-slider">Jumlah Pengguna Concurrent (100 - 1.000.000):</label>
+              <div class="slider-control-group">
+                <input type="range" id="stress-users-slider" min="100" max="1000000" step="100" value="100000" class="stress-slider">
+                <input type="number" id="stress-users-input" min="100" max="1000000" step="100" value="100000" class="stress-number-input">
+              </div>
+            </div>
+            
+            <!-- Read/Write Ratio Selector -->
+            <div class="form-group min-width-selector">
+              <label for="stress-ratio">Rasio Aktivitas (Read vs Checkout):</label>
+              <select id="stress-ratio" class="stress-select">
+                <option value="99-1" selected>99% Read / 1% Checkout (Realitas Harbolnas)</option>
+                <option value="95-5">95% Read / 5% Checkout (Trafik Sangat Tinggi)</option>
+                <option value="90-10">90% Read / 10% Checkout (Trafik Maksimal)</option>
+                <option value="50-50">50% Read / 50% Checkout (Demo Ekstrim)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="stress-btn-row">
+            <button id="btn-run-stress" type="button" class="btn btn-primary btn-block animate-pulse">
+              🚀 LUNCURKAN SIMULASI BEBAN MASSAL (STRESS TEST) 💥
+            </button>
+          </div>
+        </div>
+
+        <!-- STRESS RESULTS DISPLAYER -->
+        <div id="stress-results-box" class="stress-results-container hidden">
+          <h4 class="text-green">✓ Hasil Analisis Ketahanan Arsitektur</h4>
+          <div class="stress-results-grid">
+            <div class="result-tile">
+              <span class="tile-label">Total Beban</span>
+              <strong id="res-total-load">100,000 req</strong>
+            </div>
+            <div class="result-tile">
+              <span class="tile-label">Diserap Redis Cache</span>
+              <strong id="res-redis-absorb" class="text-green">99,000 req</strong>
+              <small id="res-redis-percent">(99%)</small>
+            </div>
+            <div class="result-tile">
+              <span class="tile-label">Beban DB Read Replica</span>
+              <strong id="res-replica-load" class="text-yellow">1,000 req</strong>
+              <small id="res-replica-status">Aman ✓</small>
+            </div>
+            <div class="result-tile">
+              <span class="tile-label">Checkout Sukses (Primary DB)</span>
+              <strong id="res-checkout-success" class="text-green">3 unit</strong>
+              <small id="res-checkout-stock">Stok Habis</small>
+            </div>
+            <div class="result-tile">
+              <span class="tile-label">Checkout Ditapis Gateway</span>
+              <strong id="res-checkout-filtered" class="text-red">997 req</strong>
+              <small>Rate Limit/Locked</small>
+            </div>
+            <div class="result-tile">
+              <span class="tile-label">Overselling Stok?</span>
+              <strong id="res-oversell-status" class="text-green">TIDAK ADA ✓</strong>
+              <small>Konsistensi 100%</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONSOLE DECK: SIMULATION BATCH CONTROLLERS & LIVE CLI TERM -->
+      <div class="panel glass-card cli-terminal-card">
+        <div class="cli-header">
+          <div class="cli-buttons">
+            <span class="cli-dot red"></span>
+            <span class="cli-dot yellow"></span>
+            <span class="cli-dot green"></span>
+          </div>
+          <div class="cli-title">eventBusLogger@apluny2025:~</div>
+          <div class="cli-actions">
+            <button id="btn-simulate-heavy-read" class="btn btn-xs btn-outline-success">🚀 Simulasi 100 Read Concurrent</button>
+            <button id="btn-simulate-heavy-checkout" class="btn btn-xs btn-danger animate-pulse">🔥 Simulasi Checkout Serentak (5 User)</button>
+            <button id="btn-reset-poc" class="btn btn-xs btn-secondary">🔄 Reset PoC</button>
+            <button id="btn-clear-term" class="btn btn-xs btn-outline-gray">🧹 Hapus Log</button>
+          </div>
+        </div>
+        <div id="cli-console" class="cli-body font-mono">
+          <div class="term-line text-gray">[SYSTEM] Inisialisasi simulator flash sale Harbolnas PoC v1.0 selesai.</div>
+          <div class="term-line text-green">[SYSTEM] Server berjalan di http://localhost:3000. Membuka koneksi SSE...</div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- SUCCESS INVOICE DIALOG MODAL -->
+  <div id="modal-invoice" class="modal-overlay hidden">
+    <div class="modal-content glass-card invoice-style animate-scale">
+      <div class="invoice-header">
+        <span class="success-seal">✓ SUKSES</span>
+        <h2>INVOICE BELANJA</h2>
+        <p class="text-xs text-gray" id="invoice-tx-id">TX-001</p>
+      </div>
+      <div class="invoice-body">
+        <div class="invoice-row">
+          <span>Produk</span>
+          <strong>iPhone 15 Pro Max 256GB</strong>
+        </div>
+        <div class="invoice-row">
+          <span>Pembeli</span>
+          <strong id="invoice-buyer-name">User-A</strong>
+        </div>
+        <div class="invoice-row">
+          <span>Metode Bayar</span>
+          <strong id="invoice-payment-method">GoPay (E-Wallet)</strong>
+        </div>
+        <div class="invoice-row">
+          <span>ID Pembayaran</span>
+          <strong id="invoice-payment-id" class="font-mono">GPY-321487</strong>
+        </div>
+        <hr class="invoice-divider">
+        <div class="invoice-row invoice-total">
+          <span>Harga Flash Sale</span>
+          <strong class="text-red">Rp 10.000</strong>
+        </div>
+      </div>
+      <div class="invoice-footer">
+        <p class="text-xs text-green font-mono">✓ Stok DB berhasil terpotong secara asinkron aman</p>
+        <button id="btn-close-invoice" class="btn btn-primary btn-block">Tutup & Kembali</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR MODAL -->
+  <div id="modal-error" class="modal-overlay hidden">
+    <div class="modal-content glass-card error-style animate-scale">
+      <div class="error-header">
+        <span class="error-seal">❌ DITOLAK</span>
+        <h2 id="error-title">Checkout Gagal</h2>
+      </div>
+      <div class="error-body text-center">
+        <p id="error-message" class="text-red text-md font-semibold">Stok barang sudah terjual habis!</p>
+      </div>
+      <div class="error-footer">
+        <button id="btn-close-error" class="btn btn-danger btn-block">Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

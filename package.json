@@ -1,0 +1,17 @@
+{
+  "name": "flash-sale-poc",
+  "version": "1.0.0",
+  "description": "Proof of Concept (PoC) Simulasi Flash Sale Harbolnas - APL UNY 2025",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.5"
+  },
+  "keywords": [],
+  "author": "Kelompok 7",
+  "license": "ISC"
+}
